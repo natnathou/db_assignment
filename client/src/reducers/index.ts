@@ -1,8 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
+import apiDuckduckgoReducer from './apiDuckduckgoSlice';
 
 const store = configureStore({
-  reducer: {},
+  reducer: {
+    apiDuckduckgo: apiDuckduckgoReducer,
+  },
 });
 
 export type AppDispatch = typeof store.dispatch;
