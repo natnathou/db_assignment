@@ -1,0 +1,22 @@
+{
+  "name": "db_israel_homework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install-dependencies": "npm-run-all --sequential install-dependencies:* ",
+    "install-dependencies:base": "npm install",
+    "install-dependencies:server": "cd server && npm install",
+    "install-dependencies:client": "cd client && npm install",
+    "dev": "npm-run-all --parallel dev:* ",
+    "dev:server-build": "cd server && tsc -w",
+    "dev:server-start": "nodemon ./server/build/index.js",
+    "dev:client-start": "cd ./client && npm run start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
