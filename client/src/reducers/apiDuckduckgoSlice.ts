@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios, { AxiosRequestConfig } from 'axios';
 import { RelatedTopic, SearchModel } from '../models/searchModels';
 
@@ -6,12 +6,14 @@ interface ApiDuckduckgoState {
   searchResult: RelatedTopic[];
   isPending: boolean;
   isRejected: boolean;
+  searchHistory: { searchValue: string; result: RelatedTopic[] }[];
 }
 
 const initialState: ApiDuckduckgoState = {
   searchResult: [],
   isPending: false,
   isRejected: false,
+  searchHistory: [],
 };
 
 interface SearchApiDuckduckgoPayload {
@@ -22,7 +24,7 @@ interface SearchApiDuckduckgoPayload {
 export const searchApiDuckduckgo = createAsyncThunk<
   SearchApiDuckduckgoPayload,
   { text: string }
->('apiDuckduckgo/search', async (text) => {
+>('apiDuckduckgo/search', async ({ text }) => {
   try {
     const config: AxiosRequestConfig = { params: { q: text, format: 'json' } };
     const response = await axios.get<SearchModel>(`http://api.duckduckgo.com/`, config);
@@ -35,7 +37,14 @@ export const searchApiDuckduckgo = createAsyncThunk<
 const apiDuckduckgoSlice = createSlice({
   name: 'apiDuckduckgo',
   initialState,
-  reducers: {},
+  reducers: {
+    updateHistoryApiDuckduckgo(
+      state,
+      action: PayloadAction<{ searchValue: string; result: RelatedTopic[] }>
+    ) {
+      return { ...state, searchHistory: [...state.searchHistory, action.payload] };
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(searchApiDuckduckgo.pending, (state, action) => {
       return { ...state, isPending: true };
