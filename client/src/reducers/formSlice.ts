@@ -1,4 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AppDispatch, RootState } from '.';
+import { manualUpdateSearchResult } from './apiDuckduckgoSlice';
 
 interface FormValueState {
   valueSearch: string;
@@ -11,7 +13,7 @@ const initialState: FormValueState = {
 };
 
 const formValueSlice = createSlice({
-  name: 'FormValueslice',
+  name: 'formValueSlice',
   initialState,
 
   reducers: {
