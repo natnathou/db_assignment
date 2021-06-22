@@ -5,16 +5,20 @@ import { RelatedTopic } from '../models/searchModels';
 import { updateFormValueSearch } from './formSlice';
 interface ApiDuckduckgoState {
   searchResult: RelatedTopic[];
+  searchResultInitialValue: RelatedTopic[];
   isPending: boolean;
   isRejected: boolean;
   searchHistory: { searchValue: string; result: RelatedTopic[]; id: number }[];
+  searchResultAtLeastOneManualUpdated: boolean;
 }
 
 const initialState: ApiDuckduckgoState = {
   searchResult: [],
+  searchResultInitialValue: [],
   isPending: false,
   isRejected: false,
   searchHistory: [],
+  searchResultAtLeastOneManualUpdated: false,
 };
 
 interface SearchApiDuckduckgoPayload {
@@ -61,6 +65,29 @@ export const setActiveTab = createAsyncThunk<
   }
 });
 
+export const boldWordIfFound = createAsyncThunk<
+  string,
+  { value: string },
+  {
+    dispatch: AppDispatch;
+    state: RootState;
+  }
+>('apiDuckduckgo/boldWordIfFound', async ({ value }, thunkApi) => {
+  const state = thunkApi.getState();
+
+  const searchResultUpdated = state.apiDuckduckgo.searchResult.map((x) => {
+    let newObj = { ...x };
+    let regex = new RegExp(value, 'gi');
+    newObj.FirstURL = newObj.FirstURL.replace(regex, `<span class=bold>${value}</span>`);
+    newObj.Text = newObj.Text.replace(regex, `<span class=bold>${value}</span>`);
+
+    return newObj;
+  });
+
+  await thunkApi.dispatch(manualUpdateSearchResult(searchResultUpdated));
+  return value;
+});
+
 const apiDuckduckgoSlice = createSlice({
   name: 'apiDuckduckgo',
   initialState,
@@ -76,6 +103,18 @@ const apiDuckduckgoSlice = createSlice({
       ];
       state.isPending = false;
       return { ...state, searchHistory: searchHistoryUpdated };
+    },
+    manualUpdateSearchResult(state, action: PayloadAction<RelatedTopic[]>) {
+      return { ...state, searchResult: action.payload };
+    },
+    oneManualUpdateSearchResultSet(state, action: PayloadAction<undefined>) {
+      return { ...state, searchResultAtLeastOneManualUpdated: true };
+    },
+    saveSearchResultInitialValue(state, action: PayloadAction<undefined>) {
+      return { ...state, searchResultInitialValue: [...state.searchResult] };
+    },
+    resetSearchResult(state, action: PayloadAction<undefined>) {
+      return { ...state, searchResult: [...state.searchResultInitialValue] };
     },
   },
   extraReducers: (builder) => {
@@ -98,5 +137,11 @@ const apiDuckduckgoSlice = createSlice({
   },
 });
 
-export const { updateHistoryApiDuckduckgo } = apiDuckduckgoSlice.actions;
+export const {
+  updateHistoryApiDuckduckgo,
+  manualUpdateSearchResult,
+  oneManualUpdateSearchResultSet,
+  saveSearchResultInitialValue,
+  resetSearchResult,
+} = apiDuckduckgoSlice.actions;
 export default apiDuckduckgoSlice.reducer;
