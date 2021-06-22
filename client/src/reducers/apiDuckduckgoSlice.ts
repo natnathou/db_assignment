@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios, { AxiosRequestConfig } from 'axios';
+import { AppDispatch, RootState } from '.';
 import { RelatedTopic } from '../models/searchModels';
-
+import { updateFormValueSearch } from './formSlice';
 interface ApiDuckduckgoState {
   searchResult: RelatedTopic[];
   isPending: boolean;
@@ -21,6 +22,10 @@ interface SearchApiDuckduckgoPayload {
   error: any;
 }
 
+interface SetActiveTabPayload {
+  response: RelatedTopic[];
+}
+
 export const searchApiDuckduckgo = createAsyncThunk<
   SearchApiDuckduckgoPayload,
   { text: string }
@@ -37,6 +42,25 @@ export const searchApiDuckduckgo = createAsyncThunk<
   }
 });
 
+export const setActiveTab = createAsyncThunk<
+  SetActiveTabPayload,
+  { id: number },
+  {
+    dispatch: AppDispatch;
+    state: RootState;
+  }
+>('apiDuckduckgo/setActiveTab', async ({ id }, thunkApi) => {
+  try {
+    let state = thunkApi.getState();
+    const rightTab = state.apiDuckduckgo.searchHistory.filter((x) => x.id === id)[0];
+    await thunkApi.dispatch(updateFormValueSearch(rightTab.searchValue));
+
+    return { response: rightTab.result };
+  } catch (error) {
+    return { response: [] };
+  }
+});
+
 const apiDuckduckgoSlice = createSlice({
   name: 'apiDuckduckgo',
   initialState,
@@ -50,7 +74,7 @@ const apiDuckduckgoSlice = createSlice({
           result: state.searchResult,
         },
       ];
-
+      state.isPending = false;
       return { ...state, searchHistory: searchHistoryUpdated };
     },
   },
@@ -66,6 +90,11 @@ const apiDuckduckgoSlice = createSlice({
         return { ...state, isPending: false, searchResult: action.payload.response };
       else return { ...state, isPending: false, searchResult: [] };
     });
+    builder.addCase(setActiveTab.fulfilled, (state, action) => {
+      return { ...state, searchResult: action.payload.response };
+    });
+    builder.addCase(setActiveTab.pending, (state, action) => {});
+    builder.addCase(setActiveTab.rejected, (state, action) => {});
   },
 });
 

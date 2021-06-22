@@ -1,27 +1,15 @@
-import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import React, { ChangeEvent, useCallback } from 'react';
 import _ from 'lodash';
 import { useAppDispatch, useAppSelector } from '../reducers';
 import {
   searchApiDuckduckgo,
   updateHistoryApiDuckduckgo,
 } from '../reducers/apiDuckduckgoSlice';
+import { updateFormValueSearch } from '../reducers/formSlice';
 
 const SearchInput = () => {
-  const apiDuckduckgoState = useAppSelector((state) => state.apiDuckduckgo);
-
-  const searchResult = useMemo(
-    () => apiDuckduckgoState.searchResult,
-    [apiDuckduckgoState.searchResult]
-  );
+  const formValueState = useAppSelector((state) => state.formValue);
   const dispatch = useAppDispatch();
-
-  const [input, _setInput] = useState('');
-  const myInputRef = React.useRef(input);
-
-  const setInput = (data: string) => {
-    myInputRef.current = data;
-    _setInput(data);
-  };
 
   const query = async (value: string) => {
     await dispatch(searchApiDuckduckgo({ text: value }));
@@ -35,13 +23,13 @@ const SearchInput = () => {
   );
 
   const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    await setInput(event.target.value);
+    await dispatch(updateFormValueSearch(event.target.value));
     delayedQuery(event.target.value);
   };
 
   return (
     <div>
-      <input type='text' value={input} onChange={handleChange} />
+      <input type='text' value={formValueState.valueSearch} onChange={handleChange} />
     </div>
   );
 };
