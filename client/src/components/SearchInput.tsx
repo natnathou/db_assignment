@@ -6,6 +6,7 @@ import {
   updateHistoryApiDuckduckgo,
 } from '../reducers/apiDuckduckgoSlice';
 import { updateFormValueSearch } from '../reducers/formSlice';
+import { saveStateInBackend } from '../reducers/apiBackendSlice';
 
 const SearchInput = () => {
   const formValueState = useAppSelector((state) => state.formValue);
@@ -13,6 +14,7 @@ const SearchInput = () => {
 
   const query = async (value: string) => {
     await dispatch(searchApiDuckduckgo({ text: value }));
+    await dispatch(saveStateInBackend());
     await dispatch(updateHistoryApiDuckduckgo(value));
   };
 

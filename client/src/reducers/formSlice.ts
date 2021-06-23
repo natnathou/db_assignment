@@ -1,7 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppDispatch, RootState } from '.';
-import { manualUpdateSearchResult } from './apiDuckduckgoSlice';
-
+import {  createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface FormValueState {
   valueSearch: string;
   valueFind: string;

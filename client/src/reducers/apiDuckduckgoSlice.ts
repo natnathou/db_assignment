@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { AppDispatch, RootState } from '.';
 import { RelatedTopic } from '../models/searchModels';
 import { updateFormValueSearch } from './formSlice';
-interface ApiDuckduckgoState {
+export interface ApiDuckduckgoState {
   searchResult: RelatedTopic[];
   searchResultInitialValue: RelatedTopic[];
   isPending: boolean;
@@ -116,6 +116,11 @@ const apiDuckduckgoSlice = createSlice({
     resetSearchResult(state, action: PayloadAction<undefined>) {
       return { ...state, searchResult: [...state.searchResultInitialValue] };
     },
+    updateAllState(state, action: PayloadAction<ApiDuckduckgoState>){
+      debugger
+      if(JSON.stringify(action.payload)!== '{}')
+        return {...action.payload}
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(searchApiDuckduckgo.pending, (state, action) => {
@@ -143,5 +148,6 @@ export const {
   oneManualUpdateSearchResultSet,
   saveSearchResultInitialValue,
   resetSearchResult,
+  updateAllState
 } = apiDuckduckgoSlice.actions;
 export default apiDuckduckgoSlice.reducer;
