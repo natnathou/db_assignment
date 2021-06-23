@@ -43,7 +43,7 @@ const FindInput = () => {
         type='text'
         value={formValueState.valueFind}
         onChange={handleChange}
-        placeholder='Search'
+        placeholder='Find'
       />
     </div>
   );

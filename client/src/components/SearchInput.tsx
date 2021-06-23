@@ -36,6 +36,7 @@ const SearchInput = () => {
         type='text'
         value={formValueState.valueSearch}
         onChange={handleChange}
+        placeholder='Search'
       />
     </div>
   );
