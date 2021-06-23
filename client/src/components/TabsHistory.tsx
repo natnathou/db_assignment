@@ -1,6 +1,7 @@
-import React, { MouseEvent } from 'react';
+import React, { Fragment, MouseEvent } from 'react';
 import { useAppDispatch, useAppSelector } from '../reducers';
 import { setActiveTab } from '../reducers/apiDuckduckgoSlice';
+import '../sass/TabsHistory.scss';
 
 const TabsHistory = () => {
   const apiDuckduckgoState = useAppSelector((state) => state.apiDuckduckgo);
@@ -14,13 +15,22 @@ const TabsHistory = () => {
   const TabsHistoryRendering = () =>
     apiDuckduckgoState?.searchHistory?.map((tab) => {
       return (
-        <div key={tab.id} id-tab={tab.id} onClick={handleClick}>
-          {tab.searchValue}
-        </div>
+        <Fragment key={tab.id}>
+          <div id-tab={tab.id} onClick={handleClick} className='TabsHistory__item'>
+            {tab.searchValue}
+          </div>
+          <hr />
+        </Fragment>
       );
     });
 
-  return <div>{TabsHistoryRendering()}</div>;
+  return (
+    <>
+      {apiDuckduckgoState?.searchHistory?.length > 0 && (
+        <div className='TabsHistory'>{TabsHistoryRendering()}</div>
+      )}
+    </>
+  );
 };
 
 export default TabsHistory;

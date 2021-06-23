@@ -1,16 +1,15 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios, { AxiosRequestConfig } from 'axios';
 import { AppDispatch, RootState } from '.';
 import { ApiDuckduckgoState, updateAllState } from './apiDuckduckgoSlice';
 
 interface ApiBackendState {
-  state: {}
+  state: {};
 }
 
 const initialState: ApiBackendState = {
-    state: {}
+  state: {},
 };
-
 
 export const saveStateInBackend = createAsyncThunk<
   void,
@@ -19,19 +18,14 @@ export const saveStateInBackend = createAsyncThunk<
     dispatch: AppDispatch;
     state: RootState;
   }
->('apiBackendStateSlice/saveStateInBackend', async ( arg, thunkApi) => {
+>('apiBackendStateSlice/saveStateInBackend', async (arg, thunkApi) => {
   try {
-
-    
     const config: AxiosRequestConfig = {
-      data: thunkApi.getState().apiDuckduckgo
+      data: thunkApi.getState().apiDuckduckgo,
     };
-    const response = await axios.post<{message: string}>(`/api/savestate`, config);
-    console.log(response)
-    
-  } catch (e) {
-   
-  }
+    const response = await axios.post<{ message: string }>(`/api/savestate`, config);
+    console.log(response);
+  } catch (e) {}
 });
 
 export const getStateFromBackend = createAsyncThunk<
@@ -41,15 +35,11 @@ export const getStateFromBackend = createAsyncThunk<
     dispatch: AppDispatch;
     state: RootState;
   }
->('apiBackendStateSlice/getStateFromBackend', async ( arg, thunkApi) => {
+>('apiBackendStateSlice/getStateFromBackend', async (arg, thunkApi) => {
   try {
-
     const response = await axios.get<ApiDuckduckgoState>(`/api/savestate`);
-   thunkApi.dispatch(updateAllState(response.data))
-    
-  } catch (e) {
-   
-  }
+    thunkApi.dispatch(updateAllState(response.data));
+  } catch (e) {}
 });
 
 const apiBackendSlice = createSlice({
@@ -57,14 +47,10 @@ const apiBackendSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(saveStateInBackend.pending, (state, action) => {
-    });
-    builder.addCase(saveStateInBackend.rejected, (state, action) => {
-    });
-    builder.addCase(saveStateInBackend.fulfilled, (state, action) => {
-    });
+    builder.addCase(saveStateInBackend.pending, (state, action) => {});
+    builder.addCase(saveStateInBackend.rejected, (state, action) => {});
+    builder.addCase(saveStateInBackend.fulfilled, (state, action) => {});
   },
 });
-
 
 export default apiBackendSlice.reducer;

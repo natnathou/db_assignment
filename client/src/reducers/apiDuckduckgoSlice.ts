@@ -10,6 +10,7 @@ export interface ApiDuckduckgoState {
   isRejected: boolean;
   searchHistory: { searchValue: string; result: RelatedTopic[]; id: number }[];
   searchResultAtLeastOneManualUpdated: boolean;
+  noResult: boolean;
 }
 
 const initialState: ApiDuckduckgoState = {
@@ -19,6 +20,7 @@ const initialState: ApiDuckduckgoState = {
   isRejected: false,
   searchHistory: [],
   searchResultAtLeastOneManualUpdated: false,
+  noResult: false,
 };
 
 interface SearchApiDuckduckgoPayload {
@@ -73,13 +75,17 @@ export const boldWordIfFound = createAsyncThunk<
     state: RootState;
   }
 >('apiDuckduckgo/boldWordIfFound', async ({ value }, thunkApi) => {
+  await thunkApi.dispatch(resetSearchResult());
   const state = thunkApi.getState();
 
   const searchResultUpdated = state.apiDuckduckgo.searchResult.map((x) => {
     let newObj = { ...x };
     let regex = new RegExp(value, 'gi');
-    newObj.FirstURL = newObj.FirstURL.replace(regex, `<span class=bold>${value}</span>`);
-    newObj.Text = newObj.Text.replace(regex, `<span class=bold>${value}</span>`);
+    newObj.FirstURL = newObj.FirstURL.replace(
+      regex,
+      `<span class=bg-warning>${value}</span>`
+    );
+    newObj.Text = newObj.Text.replace(regex, `<span class=bg-warning>${value}</span>`);
 
     return newObj;
   });
@@ -116,23 +122,38 @@ const apiDuckduckgoSlice = createSlice({
     resetSearchResult(state, action: PayloadAction<undefined>) {
       return { ...state, searchResult: [...state.searchResultInitialValue] };
     },
-    updateAllState(state, action: PayloadAction<ApiDuckduckgoState>){
-      debugger
-      if(JSON.stringify(action.payload)!== '{}')
-        return {...action.payload}
-    }
+    updateAllState(state, action: PayloadAction<ApiDuckduckgoState>) {
+      if (JSON.stringify(action.payload) !== '{}') return { ...action.payload };
+    },
+    updateNoResultStatus(state, action: PayloadAction<boolean>) {
+      return { ...state, noResult: action.payload };
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(searchApiDuckduckgo.pending, (state, action) => {
       return { ...state, isPending: true };
     });
     builder.addCase(searchApiDuckduckgo.rejected, (state, action) => {
-      return { ...state, isPending: false, isRejected: true, searchResult: [] };
+      debugger;
+      return {
+        ...state,
+        isPending: false,
+        isRejected: true,
+        searchResult: [],
+        noResult: true,
+      };
     });
     builder.addCase(searchApiDuckduckgo.fulfilled, (state, action) => {
-      if (!action.payload.error)
-        return { ...state, isPending: false, searchResult: action.payload.response };
-      else return { ...state, isPending: false, searchResult: [] };
+      let response = action.payload?.response;
+      let responseFiltered = response.filter(
+        (x) => x?.FirstURL?.length > 0 && x?.Text?.length > 0
+      );
+
+      if (!action.payload.error && responseFiltered?.length > 0) {
+        return { ...state, isPending: false, searchResult: responseFiltered };
+      } else {
+        return { ...state, isPending: false, searchResult: [], noResult: true };
+      }
     });
     builder.addCase(setActiveTab.fulfilled, (state, action) => {
       return { ...state, searchResult: action.payload.response };
@@ -148,6 +169,7 @@ export const {
   oneManualUpdateSearchResultSet,
   saveSearchResultInitialValue,
   resetSearchResult,
-  updateAllState
+  updateAllState,
+  updateNoResultStatus,
 } = apiDuckduckgoSlice.actions;
 export default apiDuckduckgoSlice.reducer;

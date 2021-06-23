@@ -4,7 +4,6 @@ import { useAppDispatch, useAppSelector } from '../reducers';
 import {
   boldWordIfFound,
   oneManualUpdateSearchResultSet,
-  resetSearchResult,
   saveSearchResultInitialValue,
 } from '../reducers/apiDuckduckgoSlice';
 import { updateFormValueFind } from '../reducers/formSlice';
@@ -23,8 +22,7 @@ const FindInput = () => {
       await dispatch(oneManualUpdateSearchResultSet());
     }
 
-    if (value.length > 0) await dispatch(boldWordIfFound({ value }));
-    else await dispatch(resetSearchResult());
+    dispatch(boldWordIfFound({ value }));
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -39,8 +37,14 @@ const FindInput = () => {
   };
 
   return (
-    <div>
-      <input type='text' value={formValueState.valueFind} onChange={handleChange} />
+    <div className='FindInput'>
+      <input
+        className='form-control'
+        type='text'
+        value={formValueState.valueFind}
+        onChange={handleChange}
+        placeholder='Search'
+      />
     </div>
   );
 };

@@ -14,8 +14,8 @@ const SearchInput = () => {
 
   const query = async (value: string) => {
     await dispatch(searchApiDuckduckgo({ text: value }));
-    await dispatch(saveStateInBackend());
     await dispatch(updateHistoryApiDuckduckgo(value));
+    await dispatch(saveStateInBackend());
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -31,7 +31,12 @@ const SearchInput = () => {
 
   return (
     <div>
-      <input type='text' value={formValueState.valueSearch} onChange={handleChange} />
+      <input
+        className='form-control'
+        type='text'
+        value={formValueState.valueSearch}
+        onChange={handleChange}
+      />
     </div>
   );
 };

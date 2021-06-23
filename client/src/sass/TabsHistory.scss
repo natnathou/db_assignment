@@ -1,0 +1,18 @@
+.TabsHistory {
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  height: 100%;
+  color: #fff !important;
+  padding: 2rem;
+  background-color: #212529;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+
+  &__item {
+    &:not(:last-child) {
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+  }
+}
