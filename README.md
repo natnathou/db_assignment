@@ -1,4 +1,4 @@
-To install dependencies, please the steps bellow:
+To install dependencies, please follow the steps bellow:
   1. npm install
   2. npm run install-dependencies
 
