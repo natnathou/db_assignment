@@ -11,6 +11,7 @@ export interface ApiDuckduckgoState {
   searchHistory: { searchValue: string; result: RelatedTopic[]; id: number }[];
   searchResultAtLeastOneManualUpdated: boolean;
   noResult: boolean;
+  activePage: number;
 }
 
 const initialState: ApiDuckduckgoState = {
@@ -21,6 +22,7 @@ const initialState: ApiDuckduckgoState = {
   searchHistory: [],
   searchResultAtLeastOneManualUpdated: false,
   noResult: false,
+  activePage: 1,
 };
 
 interface SearchApiDuckduckgoPayload {
@@ -128,6 +130,9 @@ const apiDuckduckgoSlice = createSlice({
     updateNoResultStatus(state, action: PayloadAction<boolean>) {
       return { ...state, noResult: action.payload };
     },
+    setActivePage(state, action: PayloadAction<number>) {
+      return { ...state, activePage: action.payload };
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(searchApiDuckduckgo.pending, (state, action) => {
@@ -166,5 +171,6 @@ export const {
   resetSearchResult,
   updateAllState,
   updateNoResultStatus,
+  setActivePage,
 } = apiDuckduckgoSlice.actions;
 export default apiDuckduckgoSlice.reducer;

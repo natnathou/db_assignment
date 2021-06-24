@@ -1,12 +1,14 @@
 import React, { useEffect, useState, MouseEvent, useCallback } from 'react';
-import { useAppSelector } from '../reducers';
+import { useAppDispatch, useAppSelector } from '../reducers';
 import purify from 'dompurify';
 import { RelatedTopic } from '../models/searchModels';
 import '../sass/SearchResult.scss';
+import { setActivePage } from '../reducers/apiDuckduckgoSlice';
 
 const SearchResult = () => {
   const apiDuckduckgoState = useAppSelector((state) => state.apiDuckduckgo);
-  const [activePage, setActivePage] = useState(1);
+  const dispatch = useAppDispatch();
+
   const [numberItemByPage] = useState(4);
   const [searchResultOrdered, setSearchResultOrdered] = useState<RelatedTopic[][]>([]);
 
@@ -30,15 +32,18 @@ const SearchResult = () => {
     }
 
     setSearchResultOrdered(arrayExternal);
-    setActivePage(1);
   }, [apiDuckduckgoState?.searchResult, numberItemByPage]);
 
   useEffect(() => {
     setPagination();
   }, [apiDuckduckgoState?.searchResult, setPagination]);
 
+  useEffect(() => {
+    dispatch(setActivePage(1));
+  }, [dispatch]);
+
   const SearchResultRendering = () =>
-    searchResultOrdered[activePage - 1]?.map((result, i) => {
+    searchResultOrdered[apiDuckduckgoState?.activePage - 1]?.map((result, i) => {
       return (
         <div className='searchResult__list__item' key={i}>
           <div dangerouslySetInnerHTML={{ __html: purify.sanitize(result.FirstURL) }} />
@@ -50,10 +55,10 @@ const SearchResult = () => {
   const numberOfPageRendering = () =>
     searchResultOrdered?.map((x, i) => {
       const handleClick = (event: MouseEvent<HTMLDivElement>) => {
-        setActivePage(i + 1);
+        dispatch(setActivePage(i + 1));
       };
 
-      if (i === activePage - 1)
+      if (i === apiDuckduckgoState.activePage - 1)
         return (
           <div key={i} onClick={handleClick} className='page-item'>
             <a className='page-link' href='http/localhost:3000'>
@@ -74,7 +79,7 @@ const SearchResult = () => {
     <div className='searchResult'>
       <nav className='searchResult__pagination' aria-label='Page navigation example'>
         <ul className='pagination justify-content-center'>
-          {activePage !== 0 && numberOfPageRendering()}
+          {apiDuckduckgoState.activePage !== 0 && numberOfPageRendering()}
         </ul>
       </nav>
       {apiDuckduckgoState?.searchResult?.length > 0 && (
