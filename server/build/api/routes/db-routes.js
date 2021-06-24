@@ -71,7 +71,6 @@ router.get('/getState', function (req, res) { return __awaiter(void 0, void 0, v
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                console.log(__dirname);
                 return [4 /*yield*/, fs_1.default.promises.readFile(path_1.default.join(__dirname, '..', '..', '..', 'src/db', 'filename.txt'), 'utf8')];
             case 1:
                 data = _a.sent();

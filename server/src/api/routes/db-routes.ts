@@ -27,7 +27,6 @@ router.post('/saveState', async (req: Request, res: Response) => {
 
 router.get('/getState', async (req: Request, res: Response) => {
   try {
-    console.log(__dirname);
     const data = await fs.promises.readFile(
       path.join(__dirname, '..', '..', '..', 'src/db', 'filename.txt'),
       'utf8'
