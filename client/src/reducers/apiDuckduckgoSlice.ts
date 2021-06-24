@@ -38,13 +38,12 @@ export const searchApiDuckduckgo = createAsyncThunk<
 >('apiDuckduckgo/search', async ({ text }) => {
   try {
     const config: AxiosRequestConfig = {
-      params: { q: text, format: 'json' },
+      params: { q: text },
     };
-    const response = await axios.get<any>(`https://api.duckduckgo.com/`, config);
-
-    return { response: response.data.RelatedTopics as RelatedTopic[], error: false };
+    const response = await axios.get<any>(`/api/duckduckgo`, config);
+    return response.data;
   } catch (e) {
-    return { error: true } as any;
+    return { error: true, response: [] };
   }
 });
 
@@ -59,6 +58,7 @@ export const setActiveTab = createAsyncThunk<
   try {
     let state = thunkApi.getState();
     const rightTab = state.apiDuckduckgo.searchHistory.filter((x) => x.id === id)[0];
+    await thunkApi.dispatch(searchApiDuckduckgo({ text: rightTab.searchValue }));
     await thunkApi.dispatch(updateFormValueSearch(rightTab.searchValue));
 
     return { response: rightTab.result };
@@ -144,13 +144,8 @@ const apiDuckduckgoSlice = createSlice({
       };
     });
     builder.addCase(searchApiDuckduckgo.fulfilled, (state, action) => {
-      let response = action.payload?.response;
-      let responseFiltered = response.filter(
-        (x) => x?.FirstURL?.length > 0 && x?.Text?.length > 0
-      );
-
-      if (!action.payload.error && responseFiltered?.length > 0) {
-        return { ...state, isPending: false, searchResult: responseFiltered };
+      if (!action.payload.error && action.payload?.response?.length > 0) {
+        return { ...state, isPending: false, searchResult: action.payload?.response };
       } else {
         return { ...state, isPending: false, searchResult: [], noResult: true };
       }

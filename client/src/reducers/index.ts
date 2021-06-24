@@ -2,13 +2,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import apiDuckduckgoReducer from './apiDuckduckgoSlice';
 import formValueSliceReducer from './formSlice';
-import apiBackendSliceReducer from "./apiBackendSlice";
+import apiDbSliceReducer from './apiDbSlice';
 
 const store = configureStore({
   reducer: {
     apiDuckduckgo: apiDuckduckgoReducer,
     formValue: formValueSliceReducer,
-    apiBackend: apiBackendSliceReducer
+    apiDb: apiDbSliceReducer,
   },
 });
 

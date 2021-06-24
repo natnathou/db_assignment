@@ -5,7 +5,7 @@ import SearchInput from './components/SearchInput';
 import SearchResult from './components/SearchResult';
 import TabsHistory from './components/TabsHistory';
 import { useAppDispatch, useAppSelector } from './reducers';
-import { getStateFromBackend } from './reducers/apiBackendSlice';
+import { getStateFromDb } from './reducers/apiDbSlice';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './sass/App.scss';
 import Loader from './components/Loader';
@@ -16,7 +16,7 @@ const App = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(getStateFromBackend());
+    dispatch(getStateFromDb());
   }, [dispatch]);
 
   return (
